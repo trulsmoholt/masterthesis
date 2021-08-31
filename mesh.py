@@ -243,10 +243,12 @@ class Mesh:
 
     def compute_error(self,u,u_exact):
         u_exact_vec = u.copy()
+        volumes = u.copy()
         for i in range(self.cell_centers.shape[0]):
             for j in range(self.cell_centers.shape[1]):
-                u_exact_vec = u_exact(self.cell_centers[i,j,0],self.cell_centers[i,j,1])
-        L2_error = math.sqrt(np.square(u-u_exact_vec).T@self.volumes/(np.ones(self.volumes.shape)@self.volumes))
+                u_exact_vec[self.meshToVec(i,j)] = u_exact(self.cell_centers[i,j,0],self.cell_centers[i,j,1])
+                volumes[self.meshToVec(i,j)] = self.volumes[i,j]
+        L2_error = math.sqrt(np.square(u-u_exact_vec).T@volumes/(np.ones(volumes.shape)@volumes))
         max_error = np.max(np.abs(u-u_exact_vec))
         return(L2_error,max_error)
 

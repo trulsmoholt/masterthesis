@@ -5,6 +5,7 @@ from mesh import Mesh
 from numba import jit
 
 def compute_matrix(mesh,K,matrix,k_global=None,flux_matrix = None):
+    matrix.fill(0)
     nodes = mesh.nodes
     cell_centers = mesh.cell_centers
     if k_global is None:
@@ -160,29 +161,23 @@ def compute_matrix(mesh,K,matrix,k_global=None,flux_matrix = None):
                 matrix[meshToVec(i,j),:] = 0
                 matrix[meshToVec(i,j),meshToVec(i,j)] = 1
 
-    if flux_matrix is not None:
-        return (matrix, flux_matrix_x, flux_matrix_y)
-    return matrix
 
 
 
-
-def compute_vector(mesh,f,boundary,vector=None):
+def compute_vector(mesh,f,boundary,vector):
+    vector.fill(0)
     nodes = mesh.nodes
     cell_centers = mesh.cell_centers
     num_unknowns = cell_centers.shape[1]*cell_centers.shape[0]
     nx = nodes.shape[1]
     ny = nodes.shape[0]
     meshToVec = mesh.meshToVec
-    vector = np.zeros(num_unknowns)
     for i in range(cell_centers.shape[0]):
         for j in range(cell_centers.shape[1]):
-
             if (i==0) or (i==ny-2) or (j==0) or (j==nx-2):
                 vector[meshToVec(i,j)]= boundary(cell_centers[i,j,0],cell_centers[i,j,1])
                 continue
             vector[meshToVec(i,j)] += mesh.volumes[i,j]*f(cell_centers[i,j,0],cell_centers[i,j,1])
-    return vector
 
 if __name__=='__main__':
     import sympy as sym
