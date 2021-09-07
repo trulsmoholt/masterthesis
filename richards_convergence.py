@@ -28,7 +28,7 @@ def solve_richards(mesh: Mesh,tau=None):
 
     print(mesh.max_h())
     #time discretization of 0-1
-    timestep = mesh.max_h()**2
+    timestep = mesh.max_h()**2#CFL condition
     time_partition = np.linspace(0,1,math.ceil(1/timestep))
     tau = time_partition[1]-time_partition[0]
 
@@ -50,9 +50,11 @@ def solve_richards(mesh: Mesh,tau=None):
         #L-scheme iteration
         while True:
             permeability = kappa(np.reshape(u_l, (mesh.cell_centers.shape[0],mesh.cell_centers.shape[1]),order='F'))
-            compute_matrix(mesh, K, A,k_global=permeability)#compute stiffnes matrix
+            A.fill(0)#empty the stiffness matrix
+            compute_matrix(mesh, A, K,k_global=permeability)#compute stiffnes matrix
             lhs = L*B+tau*A
-            compute_vector(mesh,lambda x,y: f(x,y,t),lambda x,y:u_exact(x,y,t),F)#compute source vector
+            F.fill(0)#empty force vector
+            compute_vector(mesh,F,lambda x,y: f(x,y,t),lambda x,y:u_exact(x,y,t))#compute source vector
             rhs = L*B@u_l + B@theta(u_t) - B@theta(u_l) + tau*F
             u = np.linalg.solve(lhs,rhs)
             if np.linalg.norm(u-u_l)<=TOL+TOL*np.linalg.norm(u_l):
@@ -62,3 +64,8 @@ def solve_richards(mesh: Mesh,tau=None):
         u_t = u
         u_l = u
     return mesh.compute_error(u,lambda x,y : u_exact(x,y,1))
+
+if __name__=="__main__":
+    mesh = Mesh(10,10,lambda p: np.array([p[0],0.5*p[0] + p[1]]))
+    mesh.plot()
+    print(solve_richards(mesh))

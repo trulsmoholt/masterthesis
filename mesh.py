@@ -8,7 +8,7 @@ import random
 
 
 class Mesh:
-    def __init__(self,num_nodes_x,num_nodes_y,P,ghostboundary = False):
+    def __init__(self,num_nodes_x,num_nodes_y,P,ghostboundary = False, boundaries=None):
         self.num_nodes_x = num_nodes_x
         self.num_nodes_y = num_nodes_y
         bottom_left = (0,0)
@@ -27,6 +27,9 @@ class Mesh:
         self.midpoints = self.__compute_interface_midpoints(self.nodes)
         self.normals = self.__compute_normals(self.nodes,self.midpoints)
         self.num_unknowns  = self.cell_centers.shape[0]*self.cell_centers.shape[1]
+        self.boundaries = boundaries
+        self.BC_nodes = self.__compute_BC_nodes(self.nodes,self.midpoints)
+        self.BC_midpoints = self.__compute_BC_midpoints(self.BC_nodes)
         #self.elements,self.boundary_elements = self.__compute_triangulation(self.cell_centers,delaunay= False)
 
 
@@ -84,6 +87,28 @@ class Mesh:
                 v = midpoints[i,j,1,:]-nodes[i,j,:]
                 normals[i,j,1,:] = np.array([-v[1],v[0]])
         return normals
+
+    def __compute_BC_nodes(self,nodes,midpoints):
+        num_nodes_y = nodes.shape[0]
+        num_nodes_x = nodes.shape[1]
+        BC_nodes = np.zeros((num_nodes_x-1,num_nodes_y-1,2))
+        #Bottom
+        for i in range(num_nodes_x-2):
+            BC_nodes[0,i] = (nodes[0,i+1]+midpoints[0,i+1,0])*0.5
+        #Right
+        for i in range(num_nodes_y-2):
+            BC_nodes[num_nodes_x-2,i] = (nodes[num_nodes_x-1,i+1]+midpoints[num_nodes_x-2,i+1,1])*0.5
+        return BC_nodes
+                
+    def __compute_BC_midpoints(self,BC_nodes):
+        num_BC_midpoints_x = BC_nodes.shape[0]-1
+        num_BC_midpoints_y = BC_nodes.shape[1]-1
+        BC_midpoints = np.zeros((num_BC_midpoints_x,num_BC_midpoints_y,2))
+        #Bottom
+        for i in range(num_BC_midpoints_x):
+            BC_midpoints[0,i] = (BC_nodes[0,i]+BC_nodes[0,i+1])*0.5
+        return BC_midpoints
+        
 
     def __compute_triangulation(self,cell_centers, delaunay = True):
         boundary = np.zeros((cell_centers.shape[0],cell_centers.shape[1]))
@@ -166,7 +191,8 @@ class Mesh:
     def plot(self):
         #plt.scatter(self.cell_centers[:,:,0],self.cell_centers[:,:,1])
         plt.scatter(self.nodes[:,:,0], self.nodes[:,:,1])
-
+        plt.scatter(self.BC_nodes[:,:,0],self.BC_nodes[:,:,1])
+        plt.scatter(self.BC_midpoints[:,:,0],self.BC_midpoints[:,:,1])
         segs1 = np.stack((self.nodes[:,:,0],self.nodes[:,:,1]), axis=2)
         segs2 = segs1.transpose(1,0,2)
         plt.gca().add_collection(LineCollection(segs1))
@@ -252,6 +278,9 @@ class Mesh:
         max_error = np.max(np.abs(u-u_exact_vec))
         return(L2_error,max_error)
 
-
-
+if __name__=="__main__":
+    mesh = Mesh(5,5,lambda p:np.array([p[0],p[1]]))
+    print(mesh.BC_nodes)
+    mesh.plot()
+    
     

@@ -4,8 +4,24 @@ from scipy.sparse import csr_matrix,lil_matrix
 from mesh import Mesh
 from numba import jit
 
-def compute_matrix(mesh,K,matrix,k_global=None,flux_matrix = None):
-    matrix.fill(0)
+def compute_matrix(mesh, matrix,K,k_global=None,flux_matrix = None):
+    """Assembles MPFA-L stiffness matrix.
+
+    Parameters
+    ----------
+    mesh : Mesh
+        A mesh object with nodes, cellcenters, normal vectors, midpoints etc. 
+    
+    matrix : NxN matrix handle.
+        Could be numpy or scipy square matrix with number of rows, N equal to the degrees of freedom. 
+    K : 2x2 numpy array
+        The permeability tensor. This is constant across the domain.
+    k_global : N dimensional numpy vector.
+        This specifies the scalar permeability at each point. Should be layd out in fortran ordering.
+    flux_matrix : two NxN matrix handles
+        This is to recover the flux.
+
+    """
     nodes = mesh.nodes
     cell_centers = mesh.cell_centers
     if k_global is None:
@@ -164,8 +180,7 @@ def compute_matrix(mesh,K,matrix,k_global=None,flux_matrix = None):
 
 
 
-def compute_vector(mesh,f,boundary,vector):
-    vector.fill(0)
+def compute_vector(mesh,vector,f,boundary):
     nodes = mesh.nodes
     cell_centers = mesh.cell_centers
     num_unknowns = cell_centers.shape[1]*cell_centers.shape[0]
