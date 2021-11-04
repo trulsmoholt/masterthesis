@@ -1,7 +1,6 @@
 import numpy as np
 from numpy.lib.function_base import vectorize
 from scipy.sparse import csr_matrix,lil_matrix
-from mesh import Mesh
 from numba import jit
 
 def compute_matrix(mesh, matrix,K,k_global=None,flux_matrix = None):
@@ -194,26 +193,5 @@ def compute_vector(mesh,vector,f,boundary):
                 continue
             vector[meshToVec(i,j)] += mesh.volumes[i,j]*f(cell_centers[i,j,0],cell_centers[i,j,1])
 
-if __name__=='__main__':
-    import sympy as sym
-    from differentiation import gradient,divergence
-    import math
-    x = sym.Symbol('x')
-    y = sym.Symbol('y')
-    K = np.array([[1,0],[0,1]])
-    u_fabric = sym.cos(y*math.pi)*sym.cosh(x*math.pi)
-    source = -divergence(gradient(u_fabric,[x,y]),[x,y],permability_tensor=K)
-    source = sym.lambdify([x,y],source)
-    u_lam = sym.lambdify([x,y],u_fabric)
 
-    mesh = Mesh(20,20,lambda p: np.array([p[0] ,p[1]]))
-    mesh.plot()
-    A = np.zeros((mesh.num_unknowns,mesh.num_unknowns))
-    flux_matrix = {'x': np.zeros((mesh.num_unknowns,mesh.num_unknowns)),'y':np.zeros((mesh.num_unknowns,mesh.num_unknowns))}
-    permability = np.ones((mesh.cell_centers.shape[0],mesh.cell_centers.shape[1]))
-    permability[2:4,16:19] = 0.1
-    A,fx,fy = compute_matrix(mesh,np.array([[1,0],[0,1]]),A,permability,flux_matrix)
-    f = compute_vector(mesh,source,u_lam)
-    mesh.plot_vector(np.linalg.solve(A,f))
-    mesh.plot_funtion(u_lam,'exact solution')
 

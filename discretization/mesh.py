@@ -28,9 +28,9 @@ class Mesh:
         self.normals = self.__compute_normals(self.nodes,self.midpoints)
         self.num_unknowns  = self.cell_centers.shape[0]*self.cell_centers.shape[1]
         self.boundaries = boundaries
-        self.BC_nodes = self.__compute_BC_nodes(self.nodes,self.midpoints)
-        self.BC_midpoints = self.__compute_BC_midpoints(self.BC_nodes)
-        #self.elements,self.boundary_elements = self.__compute_triangulation(self.cell_centers,delaunay= False)
+        #self.BC_nodes = self.__compute_BC_nodes(self.nodes,self.midpoints)
+        #self.BC_midpoints = self.__compute_BC_midpoints(self.BC_nodes)
+        self.elements,self.boundary_elements = self.__compute_triangulation(self.cell_centers,delaunay= False)
 
 
     # def __perturb(self,nodes, P):
@@ -189,10 +189,10 @@ class Mesh:
         
 
     def plot(self):
-        #plt.scatter(self.cell_centers[:,:,0],self.cell_centers[:,:,1])
+        plt.scatter(self.cell_centers[:,:,0],self.cell_centers[:,:,1])
         plt.scatter(self.nodes[:,:,0], self.nodes[:,:,1])
-        plt.scatter(self.BC_nodes[:,:,0],self.BC_nodes[:,:,1])
-        plt.scatter(self.BC_midpoints[:,:,0],self.BC_midpoints[:,:,1])
+        # plt.scatter(self.BC_nodes[:,:,0],self.BC_nodes[:,:,1])
+        # plt.scatter(self.BC_midpoints[:,:,0],self.BC_midpoints[:,:,1])
         segs1 = np.stack((self.nodes[:,:,0],self.nodes[:,:,1]), axis=2)
         segs2 = segs1.transpose(1,0,2)
         plt.gca().add_collection(LineCollection(segs1))
@@ -203,7 +203,7 @@ class Mesh:
         points = np.reshape(self.cell_centers,(self.cell_centers.shape[0]*self.cell_centers.shape[1],2))
 
 
-        #plt.triplot(points[:,0], points[:,1], self.elements,color = 'green',linestyle = 'dashed')
+        plt.triplot(points[:,0], points[:,1], self.elements,color = 'green',linestyle = 'dashed')
         # plt.savefig('figs/trapezoidal_mesh_1d5.pdf')
 
         plt.show()
@@ -279,7 +279,7 @@ class Mesh:
         return(L2_error,max_error)
 
 if __name__=="__main__":
-    mesh = Mesh(5,5,lambda p:np.array([p[0],p[1]]))
+    mesh = Mesh(5,5,lambda p:np.array(p[1]**2+[p[0],p[1]]))
     print(mesh.BC_nodes)
     mesh.plot()
     
