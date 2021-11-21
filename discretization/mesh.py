@@ -37,9 +37,6 @@ class Mesh:
         self.midpoints = self.__compute_interface_midpoints(self.nodes)
         self.normals = self.__compute_normals(self.nodes,self.midpoints)
         self.num_unknowns  = self.cell_centers.shape[0]*self.cell_centers.shape[1]
-        self.boundaries = boundaries
-        #self.BC_nodes = self.__compute_BC_nodes(self.nodes,self.midpoints)
-        #self.BC_midpoints = self.__compute_BC_midpoints(self.BC_nodes)
         self.elements,self.boundary_elements = self.__compute_triangulation(self.cell_centers,delaunay= False)
 
     def __perturb(self,nodes,P):
