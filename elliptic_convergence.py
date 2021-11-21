@@ -67,8 +67,8 @@ for i in range(start,end):
     result_pressure[i-start,0] = i
     result_flux[i-start,0] = i
     # mesh = Mesh(2**i,aspect*2**i,random_perturbation(1/(4*2**i),aspect),ghostboundary=True)
-    mesh = Mesh(2**i,2*2**i,chevron_perturbation(2*2**i),ghostboundary=True)
-    # mesh = Mesh(2**i,2**i,T)
+    # mesh = Mesh(2**i,2*2**i,chevron_perturbation(2*2**i),ghostboundary=True)
+    mesh = Mesh(2**i,2**i,T)
     num_unknowns = mesh.num_unknowns
 
 
@@ -93,7 +93,7 @@ for i in range(start,end):
     #FEM
     A = lil_matrix((mesh.num_unknowns,mesh.num_unknowns))
     F = np.zeros(num_unknowns)
-    compute_matrix_FEM(mesh,A,K,k_global=None,flux_matrix = None)
+    compute_matrix_FEM(mesh,A,K,k_global=None)
     A = csr_matrix(A,dtype=float)
     f = compute_vector_FEM(mesh,F,source,u_lam)
     u = spsolve(A,f)

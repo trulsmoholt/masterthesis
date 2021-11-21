@@ -1,7 +1,21 @@
 import numpy as np
 import math
 import sympy as sym
-def compute_matrix(mesh,matrix,K,k_global = None,flux_matrix=None):
+def compute_matrix(mesh,matrix,K,k_global = None):
+    """Assembles MPFA-L stiffness matrix.
+
+    Parameters
+    ----------
+    mesh : Mesh
+        A mesh object with nodes, cellcenters, normal vectors, midpoints etc. 
+    
+    matrix : NxN matrix handle.
+        Could be numpy or scipy square matrix with number of rows, N equal to the degrees of freedom. 
+    K : 2x2 numpy array
+        The permeability tensor. This is constant across the domain.
+    k_global : N dimensional numpy vector.
+        This specifies the scalar permeability at each point. Should be layd out in fortran ordering.
+    """
     elements = mesh.elements.astype(int)
     coordinates = np.reshape(mesh.cell_centers,(mesh.num_unknowns,2),order='C')
     boundary_elements_dirichlet = mesh.boundary_elements
@@ -9,9 +23,7 @@ def compute_matrix(mesh,matrix,K,k_global = None,flux_matrix=None):
         k_global = np.ones((mesh.cell_centers.shape[0],mesh.cell_centers.shape[1]))
     k_global = np.ravel(k_global)
     shape_grad = np.array([np.matrix([[1],[0]]),np.matrix([[0],[1]]),np.matrix([[-1],[-1]])])
-    if flux_matrix is not None:
-        flux_matrix_x = flux_matrix['x']
-        flux_matrix_y = flux_matrix['y']
+
     def local_to_reference_map(ele_num):
         mat_coords = np.array([[coordinates[elements[ele_num,0]][0],coordinates[elements[ele_num,0]][1],1],[coordinates[elements[ele_num,1]][0],coordinates[elements[ele_num,1]][1],1],[coordinates[elements[ele_num,2]][0],coordinates[elements[ele_num,2]][1],1]])
         b1 = np.array([[1],[0],[0]])
@@ -40,10 +52,6 @@ def compute_matrix(mesh,matrix,K,k_global = None,flux_matrix=None):
         jac = np.linalg.det(J) #Determinant of tranformation matrix = inverse of area of local elements
         #Local assembler
         for j in range(3):
-            if flux_matrix is not None:
-                flux = M.dot(shape_grad[j])
-                # flux_matrix_x[e,elements[e,j]] += flux[0]
-                # flux_matrix_y[e,elements[e,j]] += flux[1]
             for i in range(3):
                 x_r = M@np.array([[1/3],[1/3]])+d
                 K_int = k_global[elements[e][2]]*(1-x_r[0]-x_r[1])+k_global[elements[e][0]]*x_r[0]+k_global[elements[e][1]]*x_r[1]
@@ -55,8 +63,6 @@ def compute_matrix(mesh,matrix,K,k_global = None,flux_matrix=None):
         matrix[boundary_elements_dirichlet[e][0],boundary_elements_dirichlet[e][0]]=1
         matrix[boundary_elements_dirichlet[e][1],:]=0
         matrix[boundary_elements_dirichlet[e][1],boundary_elements_dirichlet[e][1]]=1
-    if flux_matrix is not None:
-        return (matrix,flux_matrix_x,flux_matrix_y)
     return matrix
 
 def compute_vector(mesh,vector,f,boundary):

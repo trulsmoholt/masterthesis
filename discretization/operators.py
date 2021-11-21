@@ -3,6 +3,9 @@ from scipy.sparse import csr_matrix,lil_matrix, diags
 from scipy.sparse.linalg import spsolve
 
 def mass_matrix(mesh, sparse = False):
+    """
+    Constructs diagonal mass matrix
+    """
     if sparse:
         mass = diags(np.ravel(mesh.volumes,order='F'),format='lil')
     else:

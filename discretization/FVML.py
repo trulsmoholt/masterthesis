@@ -1,7 +1,4 @@
 import numpy as np
-from numpy.lib.function_base import vectorize
-from scipy.sparse import csr_matrix,lil_matrix
-from numba import jit
 
 def compute_matrix(mesh, matrix,K,k_global=None,flux_matrix = None):
     """Assembles MPFA-L stiffness matrix.

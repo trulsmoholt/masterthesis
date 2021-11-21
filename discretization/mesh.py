@@ -1,3 +1,4 @@
+from typing import Tuple
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.collections import LineCollection
@@ -8,7 +9,16 @@ import random
 
 
 class Mesh:
-    def __init__(self,num_nodes_x,num_nodes_y,P,ghostboundary = False, boundaries=None):
+    """
+    A class containing info about mesh/grid. To be used with the spatial discretization methods.
+    """
+    def __init__(self,num_nodes_x,num_nodes_y,P,ghostboundary = False):
+        """
+        num_nodes_x : number of interaction points in x direction.
+        num_nodes_y : number of interaction points in y direction.
+        P : a funtion to perturb interaction points (corners of the volumes) from the unit square.
+        ghostboundary : whether or not to add a strip of ghost cells arount the domain.
+        """
         self.num_nodes_x = num_nodes_x
         self.num_nodes_y = num_nodes_y
         bottom_left = (0,0)
@@ -32,13 +42,6 @@ class Mesh:
         #self.BC_midpoints = self.__compute_BC_midpoints(self.BC_nodes)
         self.elements,self.boundary_elements = self.__compute_triangulation(self.cell_centers,delaunay= False)
 
-
-    # def __perturb(self,nodes, P):
-    #     for y,row in enumerate(nodes):
-    #         transform = lambda x: P(x,y/(self.num_nodes_y-1))
-    #         T = np.vectorize(transform)
-    #         nodes[y,:,0] = T(row[:,0])
-    #     return nodes
     def __perturb(self,nodes,P):
         for i in range(nodes.shape[0]):
             for j in range(nodes.shape[1]):
@@ -203,15 +206,15 @@ class Mesh:
         points = np.reshape(self.cell_centers,(self.cell_centers.shape[0]*self.cell_centers.shape[1],2))
 
 
-        plt.triplot(points[:,0], points[:,1], self.elements,color = 'green',linestyle = 'dashed')
-        # plt.savefig('figs/trapezoidal_mesh_1d5.pdf')
+        #plt.triplot(points[:,0], points[:,1], self.elements,color = 'green',linestyle = 'dashed')
+        plt.savefig('figs/MeshRichards1.pdf')
 
         plt.show()
 
-    def meshToVec(self,j,i)->int:
+    def meshToVec(self,j:int,i:int)->int:
         return i*self.cell_centers.shape[0] + j
 
-    def vecToMesh(self,h)->(int,int):
+    def vecToMesh(self,h:int)->Tuple[int,int]:
         return (h % self.cell_centers.shape[0], math.floor(h/self.cell_centers.shape[0]))
 
     def plot_vector(self,vec,text = 'text'):
@@ -222,8 +225,8 @@ class Mesh:
         fig = plt.figure(figsize=plt.figaspect(0.5))
         plt.contourf(self.cell_centers[:,:,0],self.cell_centers[:,:,1],vec_center,20,)
         plt.colorbar()
-        fig.suptitle(text)
-        plt.savefig('Pressure.pdf')
+        # fig.suptitle(text)
+        plt.savefig('figs/PressureRichards1.pdf')
 
         plt.show()
     def plot_interaction(self):
@@ -255,7 +258,8 @@ class Mesh:
         fig = plt.figure(figsize=plt.figaspect(0.5))
         plt.contourf(self.cell_centers[:,:,0],self.cell_centers[:,:,1],vec_center,20,)
         plt.colorbar()
-        fig.suptitle(text)
+        # fig.suptitle(text)
+
         plt.show()
     
     def interpolate(self,fun):
