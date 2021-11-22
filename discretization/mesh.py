@@ -203,9 +203,6 @@ class Mesh:
         points = np.reshape(self.cell_centers,(self.cell_centers.shape[0]*self.cell_centers.shape[1],2))
 
 
-        #plt.triplot(points[:,0], points[:,1], self.elements,color = 'green',linestyle = 'dashed')
-        plt.savefig('figs/MeshRichards1.pdf')
-
         plt.show()
 
     def meshToVec(self,j:int,i:int)->int:
