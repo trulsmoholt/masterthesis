@@ -22,7 +22,7 @@ This would result in the paralellogram discretization, note that we have 8 grid 
 
 ![Figure_2_small](https://user-images.githubusercontent.com/49365904/145256307-a9b73542-e4ff-4c44-b6ff-0c6f63c6d8c3.png)
 
-For solving the Poisson equation on this, one would define the problem data with numpy arrays and python funtions, then pass it to the compute_matrix and compute_vector functions, together with the mesh object. In this example we have a homogeneous domain (permeability is a matrix of ones), and a isotropic medium (tensor is diagonal).
+For solving the [Poisson equation ](https://en.wikipedia.org/wiki/Poisson%27s_equation) on this, one would define the problem data with numpy arrays and python funtions, then pass it to the compute_matrix and compute_vector functions, together with the mesh object. In this example we have a homogeneous domain (permeability is a matrix of ones), and a isotropic medium (tensor is diagonal).
 ```python
 from discretization.FVML import compute_matrix,compute_vector
 import math
