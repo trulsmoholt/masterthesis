@@ -200,8 +200,8 @@ class Mesh:
         # plt.quiver(*self.midpoints[1,1,0,:],self.normals[1,1,0,0],self.normals[1,1,0,1])
         # plt.quiver(*self.midpoints[1,1,1,:],self.normals[1,1,1,0],self.normals[1,1,1,1])
         #plt.savefig('perturbed_grid_aspect_0.2_mesh.pdf')
-        points = np.reshape(self.cell_centers,(self.cell_centers.shape[0]*self.cell_centers.shape[1],2))
-
+        # points = np.reshape(self.cell_centers,(self.cell_centers.shape[0]*self.cell_centers.shape[1],2))
+        # plt.triplot(points[:,0],points[:,1],self.elements)
 
         plt.show()
 
@@ -219,9 +219,6 @@ class Mesh:
         fig = plt.figure(figsize=plt.figaspect(0.5))
         plt.contourf(self.cell_centers[:,:,0],self.cell_centers[:,:,1],vec_center,20,)
         plt.colorbar()
-        # fig.suptitle(text)
-        plt.savefig('figs/PressureRichards1.pdf')
-
         plt.show()
     def plot_interaction(self):
         #plot nodes
