@@ -1,5 +1,9 @@
 # masterthesis
-This repo contains discretization methods for the [elliptic operator](https://en.wikipedia.org/wiki/Elliptic_operator) in two spatial dimensions that handle general quadrilateral grids. In particular, the MPFA-O and MPFA-L methods are implemented, they yield locally mass conservative discretizations that are consistent for rough grids. The MPFA-L method has particulary good monotonicity properties, i.e., the [maximum principle](https://en.wikipedia.org/wiki/Maximum_principle) is respected for a wide range of grids. It's therefore considered as the state of the art method for porous media flow problems on quadrilatereal grids.
+This repo contains discretization methods for the [elliptic PDE](https://en.wikipedia.org/wiki/Elliptic_partial_differential_equation)
+
+<img src="https://latex.codecogs.com/svg.image?u&plus;\nabla&space;\cdot&space;\left(&space;-\pmb{K}&space;\nabla&space;u\right)=f" title="u+\nabla \cdot \left( -\pmb{K} \nabla u\right)=f" />,
+
+in two spatial dimensions that handle general quadrilateral grids. In particular, the MPFA-O and MPFA-L methods are implemented, they yield locally mass conservative discretizations that are consistent for rough grids. The MPFA-L method has particulary good monotonicity properties, i.e., the [maximum principle](https://en.wikipedia.org/wiki/Maximum_principle) is respected for a wide range of grids. It's therefore considered as the state of the art method for porous media flow problems on quadrilatereal grids.
 
 The code requires numpy for assembling discretization matrices, for running the convergence tests one also needs scipy and sympy.
 # Quick tutorial #
