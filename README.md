@@ -18,11 +18,11 @@ perturbation = lambda p:np.array([p[0],0.5*p[0]+p[1]]) #perturbation on every gr
 mesh = Mesh(nx,ny,perturbation,ghostboundary=True) #Creates a mesh object with a strip of ghostcells for boundary handling
 mesh.plot()
 ```
-This would result in the paralellogram discretization, note that we have 8 grid points (in orange) in each direction, 2 more than 6, as we have a strip of ghost cells.
+This would result in the parallelogram discretization, note that we have 8 grid points (in orange) in each direction, 2 more than 6, as we have a strip of ghost cells.
 
 ![Figure_2_small](https://user-images.githubusercontent.com/49365904/145256307-a9b73542-e4ff-4c44-b6ff-0c6f63c6d8c3.png)
 
-For solving the [Poisson equation ](https://en.wikipedia.org/wiki/Poisson%27s_equation) on this, one would define the problem data with numpy arrays and python funtions, then pass it to the compute_matrix and compute_vector functions, together with the mesh object. In this example we have a homogeneous domain (permeability is a matrix of ones), and a isotropic medium (tensor is diagonal).
+For solving the [Poisson equation ](https://en.wikipedia.org/wiki/Poisson%27s_equation) on this, one would define the problem data with numpy arrays and python functions, then pass it to the compute_matrix and compute_vector functions, together with the mesh object. In this example we have a homogeneous domain (permeability is a matrix of ones), and a isotropic medium (tensor is diagonal).
 ```python
 from discretization.FVML import compute_matrix,compute_vector
 import math
